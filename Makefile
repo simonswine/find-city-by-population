@@ -23,6 +23,10 @@ build:
 push:
 	docker buildx build --push --platform $(BUILD_PLATFORM) -t $(IMAGE_PREFIX)/find-city-by-population:$(IMAGE_TAG) .
 
+.PHONY: test
+test:
+	go test -count=1 -race
+
 .PHONY: bench
 bench:
 	go test -run=XXX -bench=BenchmarkFindCityBy -benchtime 10s -cpuprofile cpu.pb.gz -memprofile mem.pb.gz

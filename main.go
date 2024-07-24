@@ -252,18 +252,27 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte(fmt.Sprintf(indexBody, result)))
 }
 
-func main() {
+func registerHandler(mux *http.ServeMux, dir string) error {
 	var err error
-
-	// find all data files with .txt extension and store in global variable
-	dataFiles, err = findFileByExt(".", ".txt")
+	dataFiles, err = findFileByExt(dir, ".txt")
 	if err != nil {
-		log.Fatal("error while finding files: ", err)
+		return fmt.Errorf("error while finding files: %w", err)
 	}
 
 	// expose web service
-	http.HandleFunc("/{$}", handleIndex)
-	http.HandleFunc("/api/by-population/", handleByPopulation)
+	mux.HandleFunc("/{$}", handleIndex)
+	mux.HandleFunc("/api/by-population/", handleByPopulation)
+
+	return nil
+}
+
+func main() {
+
+	err := registerHandler(http.DefaultServeMux, ".")
+	if err != nil {
+		log.Fatal("error while registering handler: ", err)
+	}
+
 	listenPort := ":8081"
 	log.Println("Listening on port: ", listenPort)
 	log.Fatal(http.ListenAndServe(listenPort, nil))
