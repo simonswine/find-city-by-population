@@ -34,5 +34,3 @@ bench:
 .PHONY: run
 run: data
 	go run ./
-
-
