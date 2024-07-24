@@ -8,10 +8,13 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	_ "github.com/grafana/pyroscope-go/godeltaprof/http/pprof"
 )
 
 func findFileByExt(root, ext string) ([]string, error) {
@@ -259,9 +262,10 @@ func main() {
 	}
 
 	// expose web service
-	mux := http.NewServeMux()
-	mux.HandleFunc("/{$}", handleIndex)
-	mux.HandleFunc("/api/by-population/", handleByPopulation)
-	log.Fatal(http.ListenAndServe(":8081", mux))
+	http.HandleFunc("/{$}", handleIndex)
+	http.HandleFunc("/api/by-population/", handleByPopulation)
+	listenPort := ":8081"
+	log.Println("Listening on port: ", listenPort)
+	log.Fatal(http.ListenAndServe(listenPort, nil))
 
 }

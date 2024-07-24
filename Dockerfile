@@ -7,7 +7,10 @@ RUN apt-get update && apt-get -y install unzip
 COPY Makefile /app
 RUN make data
 
-COPY go.mod main.go /app
+COPY go.mod go.sum /app
+RUN go mod download
+
+COPY main.go /app
 RUN CGO_ENABLED=0 go build -o /usr/bin/find-city-by-population  /app
 
 FROM gcr.io/distroless/static
